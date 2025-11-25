@@ -1,0 +1,29 @@
+## IDF Component Manager Manifest File
+dependencies:
+  espressif/mdns: "^1.0.0"
+  espressif/esp_ot_cli_extension:
+    version: "~1.4.0"
+  espressif/esp_rcp_update:
+    version: "1.*"
+    override_path: "../../../components/esp_rcp_update"
+  espressif/esp-zboss-lib: "~1.6.0"
+  espressif/esp-zigbee-lib: "~1.6.0"
+  espressif/esp-serial-flasher: "~1.8.0"
+  espressif/esp-zigbee-ncp:
+    version: "1.*"
+    override_path: "../../../components/esp-zigbee-ncp"
+  espressif/esp-zigbee-console:
+    version: "1.*"
+    override_path: "../../../components/esp-zigbee-console"
+  esp_br_http_ota:
+    path: ../../../components/esp_br_http_ota
+  esp_ot_br_server:
+    path: ../../../components/esp_ot_br_server
+  thread_border_router:
+    path: ../../common/thread_border_router
+  protocol_examples_common:
+    path: ${IDF_PATH}/examples/common_components/protocol_examples_common
+  
+  ## Required IDF version
+  idf:
+    version: ">=5.1.0"
