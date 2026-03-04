@@ -1,52 +1,27 @@
-#ifndef __MULTI_ROUTER_H_USED__
-#define __MULTI_ROUTER_H_USED__
+/*
+ * SPDX-FileCopyrightText: 2021 Espressif Systems (Shanghai) CO LTD
+ *
+ * SPDX-License-Identifier: CC0-1.0
+ *
+ * OpenThread Border Router Example
+ *
+ * This example code is in the Public Domain (or CC0 licensed, at your option.)
+ *
+ * Unless required by applicable law or agreed to in writing, this
+ * software is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied.
+ */
 
 #pragma once
 
-#include "multi-router_types.h"
-
-/* OpenThread */
 #include "esp_openthread_types.h"
 
+#if CONFIG_EXTERNAL_COEX_ENABLE
+#include "esp_coexist.h"
+#endif
 
-/* ZigBee */
-#include "esp_err.h"
-#include "esp_zigbee_core.h"
-//#include "esp_zigbee_console.h"
-
-/* OpenThread Configuration */
 #define RCP_FIRMWARE_DIR "/spiffs/ot_rcp"
 
-/* Zigbee Configuration */
-#define MAX_CHILDREN                    10          /* the max amount of connected devices */
-#define INSTALLCODE_POLICY_ENABLE       false       /* enable the install code policy for security */
-#define ESP_ZB_PRIMARY_CHANNEL_MASK     (1l << 13)  /* Zigbee primary channel mask use in the example */
-#define ESP_ZB_GATEWAY_ENDPOINT         1           /* Gateway endpoint identifier */
-#define APP_PROD_CFG_CURRENT_VERSION    0x0001      /* Production configuration version */
-#define RCP_VERSION_MAX_SIZE            80
-#define HOST_RESET_PIN_TO_RCP_RESET     CONFIG_PIN_TO_RCP_RESET
-#define HOST_BOOT_PIN_TO_RCP_BOOT       CONFIG_PIN_TO_RCP_BOOT
-#define HOST_RX_PIN_TO_RCP_TX           CONFIG_PIN_TO_RCP_TX
-#define HOST_TX_PIN_TO_RCP_RX           CONFIG_PIN_TO_RCP_RX
-
-/* Custom */
-#define MULTIROUTER_OT_RADIO                   OT_RCP_SPI
-#define MULTIROUTER_ZB_RADIO                   ZB_RCP_UART
-
-/* Basic manufacturer information */
-#define ESP_MANUFACTURER_NAME "\x09""BRIGHWARE"      /* Customized manufacturer name */
-#define ESP_MODEL_IDENTIFIER "\x07""WINKHAUS-ZB" /* Customized model identifier */
-
-#define ESP_ZB_ZC_CONFIG()                                                              \
-    {                                                                                   \
-        .esp_zb_role = ESP_ZB_DEVICE_TYPE_COORDINATOR,                                  \
-        .install_code_policy = INSTALLCODE_POLICY_ENABLE,                               \
-        .nwk_cfg.zczr_cfg = {                                                           \
-            .max_children = MAX_CHILDREN,                                               \
-        },                                                                              \
-    }
-
-/** DEFAULT RADIO CONFIG   */
 #if CONFIG_OPENTHREAD_RADIO_SPINEL_UART
 #define ESP_OPENTHREAD_DEFAULT_RADIO_CONFIG()              \
     {                                                      \
@@ -91,10 +66,11 @@
                     .spics_io_num = CONFIG_PIN_TO_RCP_CS,  \
                     .queue_size = 5,                       \
                 },                                         \
-                 .intr_pin = CONFIG_PIN_TO_RCP_BOOT,       \
+            .intr_pin = CONFIG_PIN_TO_RCP_BOOT,            \
         },                                                 \
     }
 #endif // CONFIG_OPENTHREAD_RADIO_SPINEL_UART OR  CONFIG_OPENTHREAD_RADIO_SPINEL_SPI
+
 #if CONFIG_AUTO_UPDATE_RCP
 
 #if defined(CONFIG_ESP_BR_H2_TARGET)
@@ -104,6 +80,7 @@
 #else
 #error RCP target type not supported.
 #endif
+
 #define ESP_OPENTHREAD_RCP_UPDATE_CONFIG()                                                                   \
     {                                                                                                        \
         .rcp_type = RCP_TYPE_UART, .uart_rx_pin = CONFIG_PIN_TO_RCP_TX, .uart_tx_pin = CONFIG_PIN_TO_RCP_RX, \
@@ -117,6 +94,7 @@
         0                                  \
     }
 #endif
+
 #if CONFIG_OPENTHREAD_CONSOLE_TYPE_UART
 #define ESP_OPENTHREAD_DEFAULT_HOST_CONFIG()                   \
     {                                                          \
@@ -175,15 +153,3 @@
     }
 #endif
 #endif // CONFIG_EXTERNAL_COEX_ENABLE
-
-#define ESP_ZB_DEFAULT_RADIO_CONFIG   ESP_OPENTHREAD_DEFAULT_RADIO_CONFIG
-#define ZB_RADIO_MODE_UART_RCP        RADIO_MODE_UART_RCP
-#define ZB_RADIO_MODE_NATIVE          RADIO_MODE_SPI_RCP
-#define ESP_ZB_RCP_UPDATE CONFIG      ESP_OPENTHREAD_RCP_UPDATE_CONFIG
-
-
-#define ESP_ZB_DEFAULT_HOST_CONFIG()                            \
-    {                                                           \
-        .host_connection_mode = ZB_HOST_CONNECTION_MODE_NONE,   \
-    }
-#endif /* __MULTI-ROUTER_H_USED__ */

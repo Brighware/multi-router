@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "multi-router.h"
-#inlude "multi-router_types.h"
+#include "multi-router_types.h"
 #include "sdkconfig.h"
 
 #include "esp_check.h"
@@ -269,10 +269,10 @@ void app_main(void)
         .host_config = ESP_OPENTHREAD_DEFAULT_HOST_CONFIG(),
         .port_config = ESP_OPENTHREAD_DEFAULT_PORT_CONFIG(),
     };
-    esp_zb_platform_config_t zb_config = {
+/*    esp_zb_platform_config_t zb_config = {
         .radio_config = ESP_OPENTHREAD_DEFAULT_RADIO_CONFIG(),
         .host_config = ESP_OPENTHREAD_DEFAULT_HOST_CONFIG(),
-    };
+    };*/
 
     /* esp-thread-br */
     esp_rcp_update_config_t rcp_update_config = ESP_OPENTHREAD_RCP_UPDATE_CONFIG();
@@ -284,7 +284,7 @@ void app_main(void)
     ESP_ERROR_CHECK(esp_event_loop_create_default());
 
     /* esp-zigbee-sdk */
-    ESP_ERROR_CHECK(esp_zb_platform_config(&zb_config));
+    /*ESP_ERROR_CHECK(esp_zb_platform_config(&zb_config));*/
 
     /* esp-thread-br */
 #if !CONFIG_OPENTHREAD_BR_AUTO_START && CONFIG_EXAMPLE_CONNECT_ETHERNET
@@ -309,5 +309,5 @@ void app_main(void)
     /* esp-thread-br */
     launch_openthread_border_router(&ot_platform_config, &rcp_update_config);
     
-    xTaskCreate(esp_zb_task, "Zigbee_main", 8192, NULL, 5, NULL);
+//    xTaskCreate(esp_zb_task, "Zigbee_main", 8192, NULL, 5, NULL);
 }
