@@ -10,7 +10,7 @@
 #include "esp_openthread.h"
 #include "esp_openthread_border_router.h"
 #include "esp_openthread_types.h"
-#include "esp_ot_config.h"
+
 #include "esp_ot_ota_commands.h"
 #include "esp_ot_wifi_cmd.h"
 #include "freertos/FreeRTOS.h"
@@ -25,13 +25,15 @@
 #include "esp_coexist.h"
 #include "mdns.h"
 #include "driver/uart.h"
-#include "esp_zigbee_gateway.h"
 #include "border_router_launch.h"
 #include "esp_br_web.h"
-#include "esp_ot_br.h"
+
 #include "esp_vfs_dev.h"
 #include "esp_vfs_usb_serial_jtag.h"
 #include "driver/usb_serial_jtag.h"
+
+#include "esp_ot_br.h"
+#include "esp_zigbee_gateway.h"
 
 #if CONFIG_EXTERNAL_COEX_ENABLE
 #include "esp_coexist.h"

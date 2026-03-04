@@ -16,7 +16,6 @@
 #include "esp_openthread.h"
 #include "esp_openthread_border_router.h"
 #include "esp_openthread_types.h"
-#include "esp_ot_br.h"
 #include "esp_ot_ota_commands.h"
 #include "esp_ot_wifi_cmd.h"
 #include "esp_spiffs.h"
@@ -25,10 +24,10 @@
 #include "nvs_flash.h"
 #include "driver/uart.h"
 #include "freertos/FreeRTOS.h"
-
 #include "border_router_launch.h"
 #include "esp_br_web.h"
 
+#include "esp_ot_br.h"
 #if CONFIG_EXTERNAL_COEX_ENABLE
 #include "esp_coexist.h"
 #endif
