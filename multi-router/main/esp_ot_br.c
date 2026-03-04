@@ -16,7 +16,7 @@
 #include "esp_openthread.h"
 #include "esp_openthread_border_router.h"
 #include "esp_openthread_types.h"
-#include "esp_ot_config.h"
+#include "esp_ot_br.h"
 #include "esp_ot_ota_commands.h"
 #include "esp_ot_wifi_cmd.h"
 #include "esp_spiffs.h"
@@ -33,10 +33,14 @@
 #include "esp_coexist.h"
 #endif
 
-#define TAG "esp_ot_br"
+// #define TAG "esp_ot_br"
 
 extern const uint8_t server_cert_pem_start[] asm("_binary_ca_cert_pem_start");
 extern const uint8_t server_cert_pem_end[] asm("_binary_ca_cert_pem_end");
+
+static esp_openthread_platform_config_t platform_config ;
+static const char *OT_TAG = "OT_BR";
+static TaskHandle_t otHandle;
 
 static esp_err_t init_spiffs(void)
 {
@@ -64,7 +68,10 @@ static void ot_br_external_coexist_init(void)
 }
 #endif /* CONFIG_EXTERNAL_COEX_ENABLE */
 
-void app_main(void)
+
+
+/** app_main()  */
+void esp_ot_task( void *pvParameters )
 {
     // Used eventfds:
     // * netif
@@ -117,4 +124,13 @@ void app_main(void)
 #endif
 
     launch_openthread_border_router(&platform_config, &rcp_update_config);
+}
+
+
+TaskHandle_t esp_ot_br( void )
+{
+    otHandle = NULL;
+    xTaskCreate(esp_ot_task, OT_TAG, 4096, NULL, 6, &otHandle);
+    configASSERT( otHandle );
+    return(otHandle);
 }

@@ -12,9 +12,12 @@
  * CONDITIONS OF ANY KIND, either express or implied.
  */
 
-#pragma once
+#ifndef __ESP_OT_BR_H_USED__
+#define __ESP_OT_BR_H_USED__
 
 #include "esp_openthread_types.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
 
 #if CONFIG_EXTERNAL_COEX_ENABLE
 #include "esp_coexist.h"
@@ -153,3 +156,9 @@
     }
 #endif
 #endif // CONFIG_EXTERNAL_COEX_ENABLE
+
+extern void esp_ot_task( void *pvParameters );
+extern TaskHandle_t esp_ot_br( void );
+
+
+#endif
