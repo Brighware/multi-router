@@ -84,6 +84,16 @@ static void esp_zb_gateway_update_rcp(void)
     esp_restart();
 }
 
+/*****************************************************************************/
+/**
+ *  @fn         static void esp_zb_gateway_board_try_update(const char *rcp_version_str)
+ *  @brief      Try to update zb board
+ *  @param    const char *rcp_version_str  
+ *  @retval     None
+ *  @par
+ *
+ *  @note
+ *****************************************************************************/
 static void esp_zb_gateway_board_try_update(const char *rcp_version_str)
 {
     char version_str[RCP_VERSION_MAX_SIZE];

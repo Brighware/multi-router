@@ -1,9 +1,9 @@
-menu "ESP Zigbee gateway rcp"
+menu "ESP Zigbee gateway UART RCP"
+
     config ZB_ENABLE_CONSOLE
       bool 'Enable ZigBee Console'
       default False
-      
-    depends on ZB_RADIO_SPINEL_UART
+  
     menu "Board Configuration"
         config PIN_TO_ZB_RCP_RESET
             int "Pin to RCP reset"
@@ -31,24 +31,9 @@ menu "ESP Zigbee gateway rcp"
             will be automatically updated upon version mismatch.
 
 endmenu
-menu "ESP OT BR UART RCP"
-  depends on OPENTHREAD_RADIO_SPINEL_UART
-  config PIN_OT_RCP_UART_RX
-    int "Pin to ot RCP UART RX"
-    default "-1"
-  config PIN_OT_RCP_UART_TX
-    int "Pin to OT RCP UART TX"
-    default "-1"
-  config PIN_OT_RCP_UART_BOOT
-    int "Pin to OT RCP BOOT"
-    default "-1"
-  config PIN_TO_OT_RCP_UART_RESET
-    int "Pin to OT RCP RESET"
-    default "-1"
-endmenu
 
-menu "ESP OT BR SPI RCP"
-  depends on OPENTHREAD_RADIO_SPINEL_SPI
+
+menu "ESP Openthread BR SPI RCP"
   config PIN_TO_OT_RCP_MOSI
     int "RCP MOSI Pin"
     default "45"
