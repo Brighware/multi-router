@@ -82,6 +82,27 @@
  */
 
 
+#if CONFIG_OPENTHREAD_RADIO_SPINEL_UART
+#define ESP_OPENTHREAD_DEFAULT_RADIO_CONFIG()              \
+    {                                                      \
+        .radio_mode = RADIO_MODE_UART_RCP,                 \
+        .radio_uart_config = {                             \
+            .port = 1,                                     \
+            .uart_config =                                 \
+                {                                          \
+                    .baud_rate = 460800,                   \
+                    .data_bits = UART_DATA_8_BITS,         \
+                    .parity = UART_PARITY_DISABLE,         \
+                    .stop_bits = UART_STOP_BITS_1,         \
+                    .flow_ctrl = UART_HW_FLOWCTRL_DISABLE, \
+                    .rx_flow_ctrl_thresh = 0,              \
+                    .source_clk = UART_SCLK_DEFAULT,       \
+                },                                         \
+            .rx_pin = CONFIG_PIN_TO_RCP_TX,                \
+            .tx_pin = CONFIG_PIN_TO_RCP_RX,                \
+        },                                                 \
+    }
+#else
 #define ESP_OPENTHREAD_DEFAULT_RADIO_CONFIG()              \
     {                                                      \
         .radio_mode = RADIO_MODE_SPI_RCP,                  \
@@ -108,7 +129,9 @@
             .intr_pin = CONFIG_PIN_TO_OT_RCP_BOOT,            \
         },                                                 \
     }
+#endif // CONFIG_OPENTHREAD_RADIO_SPINEL_UART OR  CONFIG_OPENTHREAD_RADIO_SPINEL_SPI
 
+#if CONFIG_AUTO_UPDATE_RCP
 
 #if defined(CONFIG_ESP_BR_H2_TARGET)
 #define ESP_BR_RCP_TARGET_ID ESP32H2_CHIP
@@ -118,7 +141,6 @@
 #error RCP target type not supported.
 #endif
 
-#if CONFIG_AUTO_UPDATE_RCP
 #define ESP_OPENTHREAD_RCP_UPDATE_CONFIG()                                                                   \
     {                                                                                                        \
         .rcp_type = RCP_TYPE_UART, .uart_rx_pin = CONFIG_PIN_TO_RCP_TX, .uart_tx_pin = CONFIG_PIN_TO_RCP_RX, \
@@ -133,12 +155,18 @@
     }
 #endif
 
-
+#if CONFIG_OPENTHREAD_CONSOLE_TYPE_UART
+#define ESP_OPENTHREAD_DEFAULT_HOST_CONFIG()               \
+    {                                                      \
+        .host_connection_mode = HOST_CONNECTION_MODE_NONE, \
+    }
+#elif CONFIG_OPENTHREAD_CONSOLE_TYPE_USB_SERIAL_JTAG
 #define ESP_OPENTHREAD_DEFAULT_HOST_CONFIG()                        \
     {                                                               \
         .host_connection_mode = HOST_CONNECTION_MODE_CLI_USB,       \
         .host_usb_config = USB_SERIAL_JTAG_DRIVER_CONFIG_DEFAULT(), \
     }
+#endif
 
 #define ESP_OPENTHREAD_DEFAULT_PORT_CONFIG()                                            \
     {                                                                                   \

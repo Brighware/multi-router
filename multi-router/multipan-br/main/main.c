@@ -231,7 +231,7 @@ void zb_rcp_error_handler(void)
     esp_restart();
 }
 
-
+#if CONFIG_OPENTHREAD_SPINEL_ONLY
 static esp_err_t check_zb_rcp_version(void)
 {
     char internal_rcp_version[RCP_VERSION_MAX_SIZE];
@@ -242,12 +242,14 @@ static esp_err_t check_zb_rcp_version(void)
 #endif
     return ESP_OK;
 }
+#endif
 
 
 static void esp_zb_task(void *pvParameters)
 {
-
+#if CONFIG_OPENTHREAD_SPINEL_ONLY
     esp_radio_spinel_register_rcp_failure_handler(zb_rcp_error_handler, ESP_RADIO_SPINEL_ZIGBEE);
+#endif
     /* initialize Zigbee stack */
     esp_zb_cfg_t zb_nwk_cfg = ESP_ZB_ZC_CONFIG();
     esp_zb_init(&zb_nwk_cfg);
