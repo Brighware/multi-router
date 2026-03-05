@@ -14,7 +14,6 @@
 
 #include "esp_err.h"
 #include "esp_zigbee_core.h"
-#include "esp_zigbee_console.h"
 
 /* Zigbee Configuration */
 #define MAX_CHILDREN                    10          /* the max amount of connected devices */
@@ -29,8 +28,8 @@
 #define HOST_TX_PIN_TO_RCP_RX           CONFIG_PIN_TO_RCP_RX
 
 /* Basic manufacturer information */
-#define ESP_MANUFACTURER_NAME "\x09""BRIGHWARE"      /* Customized manufacturer name */
-#define ESP_MODEL_IDENTIFIER "\x07""WINKHAUS-ZB" /* Customized model identifier */
+#define ESP_MANUFACTURER_NAME "\x09""ESPRESSIF"      /* Customized manufacturer name */
+#define ESP_MODEL_IDENTIFIER "\x07"CONFIG_IDF_TARGET /* Customized model identifier */
 
 #define ESP_ZB_ZC_CONFIG()                                                              \
     {                                                                                   \
