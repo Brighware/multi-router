@@ -1,0 +1,70 @@
+menu "ESP Zigbee gateway rcp"
+    config ZB_ENABLE_CONSOLE
+      bool 'Enable ZigBee Console'
+      default False
+      
+    depends on ZB_RADIO_SPINEL_UART
+    menu "Board Configuration"
+        config PIN_TO_ZB_RCP_RESET
+            int "Pin to RCP reset"
+            default "7"
+
+        config PIN_TO_ZB_RCP_BOOT
+            int "Pin to RCP boot"
+            default "8"
+
+        config PIN_TO_ZB_RCP_TX
+            int "Pin to RCP TX"
+            default "17"
+
+        config PIN_TO_ZB_RCP_RX
+            int "Pin to RCP RX"
+            default "18"
+    endmenu
+    
+    config ZIGBEE_GW_AUTO_UPDATE_RCP
+        bool 'Update RCP automatically'
+        default False
+        help
+            If enabled, the Zigbee gateway will store the RCP image in its firmware and
+            compare the stored image version with the running RCP image upon boot. The RCP
+            will be automatically updated upon version mismatch.
+
+endmenu
+menu "ESP OT BR UART RCP"
+  depends on OPENTHREAD_RADIO_SPINEL_UART
+  config PIN_OT_RCP_UART_RX
+    int "Pin to ot RCP UART RX"
+    default "-1"
+  config PIN_OT_RCP_UART_TX
+    int "Pin to OT RCP UART TX"
+    default "-1"
+  config PIN_OT_RCP_UART_BOOT
+    int "Pin to OT RCP BOOT"
+    default "-1"
+  config PIN_TO_OT_RCP_UART_RESET
+    int "Pin to OT RCP RESET"
+    default "-1"
+endmenu
+
+menu "ESP OT BR SPI RCP"
+  depends on OPENTHREAD_RADIO_SPINEL_SPI
+  config PIN_TO_OT_RCP_MOSI
+    int "RCP MOSI Pin"
+    default "45"
+  config PIN_TO_OT_RCP_MISO
+    int "RCP MISO Pin"
+    default "38"
+  config PIN_TO_OT_RCP_SCLK
+    int "RCP SCLK Pin"
+    default "21"
+  config PIN_TO_OT_RCP_CS
+    int "RCP CS Pin"
+    default "41"
+  config PIN_TO_OT_RCP_BOOT
+    int "RCP Boot Pin"
+    default "39"
+  config PIN_TO_OT_RCP_RESET
+    int "RCP Reset Pin"
+    default "40"
+endmenu
