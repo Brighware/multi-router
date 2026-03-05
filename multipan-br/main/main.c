@@ -359,14 +359,10 @@ void app_main (void )
         .host_config = ESP_ZB_DEFAULT_HOST_CONFIG(),
     };
 
-    esp_openthread_config_t openthread_config = {
-        .netif_config = ESP_NETIF_DEFAULT_OPENTHREAD(),
-        .platform_config =
-            {
-                .radio_config = ESP_OPENTHREAD_DEFAULT_RADIO_CONFIG(),
-                .host_config = ESP_OPENTHREAD_DEFAULT_HOST_CONFIG(),
-                .port_config = ESP_OPENTHREAD_DEFAULT_PORT_CONFIG(),
-            },
+    esp_openthread_platform_config_t platform_config = {
+        .radio_config = ESP_OPENTHREAD_DEFAULT_RADIO_CONFIG(),
+        .host_config = ESP_OPENTHREAD_DEFAULT_HOST_CONFIG(),
+        .port_config = ESP_OPENTHREAD_DEFAULT_PORT_CONFIG(),
     };
 
     esp_rcp_update_config_t rcp_update_config = ESP_OPENTHREAD_RCP_UPDATE_CONFIG();
@@ -399,7 +395,7 @@ void app_main (void )
     esp_br_web_start("/spiffs");
 #endif
 
-    launch_openthread_border_router(&openthread_config, &rcp_update_config);
+    launch_openthread_border_router(&platform_config, &rcp_update_config);
 
     zbHandle = NULL;
     xTaskCreate(esp_zb_task, ZB_TAG, ZB_TASK_SIZE, NULL, ZB_TASK_PRIORITY, &zbHandle);
