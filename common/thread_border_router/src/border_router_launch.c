@@ -21,8 +21,6 @@
 #include "esp_openthread_netif_glue.h"
 #include "esp_openthread_types.h"
 #include "esp_ot_cli_extension.h"
-#include "esp_ot_rcp_update.h"
-#include "esp_rcp_update.h"
 #include "esp_vfs_eventfd.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -56,7 +54,7 @@
 #error No backbone netif!
 #endif
 
-#define TAG "esp_ot_br"
+static char *TAG;
 
 #if CONFIG_EXAMPLE_CONNECT_WIFI && CONFIG_OPENTHREAD_BR_AUTO_START
 /**
@@ -179,8 +177,9 @@ static void ot_br_init(void *ctx)
 #endif // CONFIG_OPENTHREAD_BR_AUTO_START
 
 void launch_openthread_border_router(const esp_openthread_config_t *config,
-                                     const esp_rcp_update_config_t *update_config)
+                                    const char *esp_ot_task_tag)
 {
+    TAG = esp_ot_task_tag;
 #if CONFIG_OPENTHREAD_CLI
     ot_console_start();
 #endif
@@ -189,22 +188,14 @@ void launch_openthread_border_router(const esp_openthread_config_t *config,
     ot_external_coexist_init();
 #endif
 
-#if CONFIG_AUTO_UPDATE_RCP
-    ESP_ERROR_CHECK(esp_rcp_update_init(update_config));
-    esp_ot_register_rcp_handler();
-#else
-    OT_UNUSED_VARIABLE(update_config);
-#endif
 
     ESP_ERROR_CHECK(esp_openthread_start(config));
-#if CONFIG_AUTO_UPDATE_RCP
-    esp_ot_update_rcp_if_different();
-#endif
+
 #if CONFIG_OPENTHREAD_CLI_ESP_EXTENSION
     esp_cli_custom_command_init();
 #endif
     ot_register_external_commands();
 #if CONFIG_OPENTHREAD_BR_AUTO_START
-    xTaskCreate(ot_br_init, "ot_br_init", 6144, NULL, 4, NULL);
+    xTaskCreate(ot_br_init, esp_ot_task_tag, 6144, NULL, 4, NULL);
 #endif
 }

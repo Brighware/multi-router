@@ -5,19 +5,20 @@
  *
  */
 
-#pragma once
+#ifndef __BORDER_ROUTER_LAUNCH_H_USED__
+#define __BORDER_ROUTER_LAUNCH_H_USED__
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 #include "esp_openthread.h"
 #include "esp_openthread_border_router.h"
-#include "esp_rcp_update.h"
 
 void launch_openthread_border_router(const esp_openthread_config_t *config,
-                                     const esp_rcp_update_config_t *update_config);
+                                      const char *esp_ot_task_tag);
 
 #ifdef __cplusplus
 } /* extern "C" */
+#endif
+
 #endif
