@@ -5,7 +5,13 @@
 #include "esp_zigbee_console.h"
 #endif
 #include "esp_radio_spinel.h"
+#include "esp_openthread_types.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
 
+#if CONFIG_EXTERNAL_COEX_ENABLE
+#include "esp_coexist.h"
+#endif
 
 /**
 **  Zigbee Configuration **
@@ -71,14 +77,6 @@
 /**
 **  OpenThread Configuration **
  */
-#include "esp_openthread_types.h"
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
-
-#if CONFIG_EXTERNAL_COEX_ENABLE
-#include "esp_coexist.h"
-#endif
-
 #define RCP_FIRMWARE_DIR "/spiffs/ot_rcp"
 
 #if CONFIG_OPENTHREAD_RADIO_SPINEL_UART
@@ -155,24 +153,28 @@
 #endif
 
 #if CONFIG_OPENTHREAD_CONSOLE_TYPE_UART
-#define ESP_OPENTHREAD_DEFAULT_HOST_CONFIG()                   \
-    {                                                          \
-        .host_connection_mode = HOST_CONNECTION_MODE_CLI_UART, \
-        .host_uart_config = {                                  \
-            .port = 0,                                         \
-            .uart_config =                                     \
-                {                                              \
-                    .baud_rate = 115200,                       \
-                    .data_bits = UART_DATA_8_BITS,             \
-                    .parity = UART_PARITY_DISABLE,             \
-                    .stop_bits = UART_STOP_BITS_1,             \
-                    .flow_ctrl = UART_HW_FLOWCTRL_DISABLE,     \
-                    .rx_flow_ctrl_thresh = 0,                  \
-                    .source_clk = UART_SCLK_DEFAULT,           \
-                },                                             \
-            .rx_pin = UART_PIN_NO_CHANGE,                      \
-            .tx_pin = UART_PIN_NO_CHANGE,                      \
-        },                                                     \
+// #define ESP_OPENTHREAD_DEFAULT_HOST_CONFIG()                   \
+//     {                                                          \
+//         .host_connection_mode = HOST_CONNECTION_MODE_CLI_UART, \
+//         .host_uart_config = {                                  \
+//             .port = 0,                                         \
+//             .uart_config =                                     \
+//                 {                                              \
+//                     .baud_rate = 115200,                       \
+//                     .data_bits = UART_DATA_8_BITS,             \
+//                     .parity = UART_PARITY_DISABLE,             \
+//                     .stop_bits = UART_STOP_BITS_1,             \
+//                     .flow_ctrl = UART_HW_FLOWCTRL_DISABLE,     \
+//                     .rx_flow_ctrl_thresh = 0,                  \
+//                     .source_clk = UART_SCLK_DEFAULT,           \
+//                 },                                             \
+//             .rx_pin = UART_PIN_NO_CHANGE,                      \
+//             .tx_pin = UART_PIN_NO_CHANGE,                      \
+//         },                                                     \
+//     }
+#define ESP_OPENTHREAD_DEFAULT_HOST_CONFIG()               \
+    {                                                      \
+        .host_connection_mode = HOST_CONNECTION_MODE_NONE, \
     }
 #elif CONFIG_OPENTHREAD_CONSOLE_TYPE_USB_SERIAL_JTAG
 #define ESP_OPENTHREAD_DEFAULT_HOST_CONFIG()                        \
@@ -215,12 +217,17 @@
 
 /** TODO:  Merge `esp_ot_br.h` and 'esp_zigbee_gateway.h` in to this file  */
 
-
+typedef enum {
+    _NETIF = 0,
+    _TASK_QUEUE,
+    _OT_BR,
+    _ZB_GW,
+    _NUM_OF_EVENTS
+} e_EventList;
 
 
 extern void esp_ot_task( void *pvParameters );
-extern TaskHandle_t esp_ot_br( void );
-extern TaskHandle_t esp_zigbee_gateway(void);
+extern void esp_zigbee_gateway(void);
 
 /*****************************************************************************/
 /**
