@@ -33,8 +33,9 @@
 #include "esp_vfs_usb_serial_jtag.h"
 #include "driver/usb_serial_jtag.h"
 
-#include "esp_ot_br.h"
-#include "esp_zigbee_gateway.h"
+//#include "esp_ot_br.h"
+//#include "esp_zigbee_gateway.h"
+#include "multi_pan_br.h"
 
 #define loop() while(1)
 
