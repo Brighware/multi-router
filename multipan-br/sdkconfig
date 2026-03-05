@@ -595,9 +595,14 @@ CONFIG_PARTITION_TABLE_MD5=y
 # end of Partition Table
 
 #
+# Multi-pan Border Router Config
+#
+CONFIG_MP_BR_HOSTNAME="Multipan-BR"
+
+#
 # ESP Zigbee gateway UART RCP
 #
-CONFIG_ZB_ENABLE_CONSOLE=y
+# CONFIG_ZB_ENABLE_CONSOLE is not set
 
 #
 # Board Configuration
@@ -621,6 +626,7 @@ CONFIG_PIN_TO_OT_RCP_CS=41
 CONFIG_PIN_TO_OT_RCP_BOOT=39
 CONFIG_PIN_TO_OT_RCP_RESET=40
 # end of ESP Openthread BR SPI RCP
+# end of Multi-pan Border Router Config
 
 #
 # Example Connection Configuration
@@ -667,10 +673,22 @@ CONFIG_EXAMPLE_CONNECT_IPV6_PREF_LOCAL_LINK=y
 # end of Example Connection Configuration
 
 #
+# Config for OpenThread Examples
+#
+CONFIG_OPENTHREAD_NETWORK_AUTO_START=y
+
+#
+# External Console Commands
+#
+CONFIG_OPENTHREAD_IPERF_CMD_ENABLE=y
+# end of External Console Commands
+# end of Config for OpenThread Examples
+
+#
 # ESP Thread Border Router Example
 #
-CONFIG_ESP_BR_BOARD_STANDALONE=y
-# CONFIG_ESP_BR_BOARD_DEV_KIT is not set
+# CONFIG_ESP_BR_BOARD_STANDALONE is not set
+CONFIG_ESP_BR_BOARD_DEV_KIT=y
 # CONFIG_ESP_BR_BOARD_P4 is not set
 # CONFIG_ESP_BR_BOARD_M5STACK_CORES3 is not set
 
@@ -691,11 +709,7 @@ CONFIG_ESP_BR_H2_TARGET=y
 # CONFIG_ESP_BR_C6_TARGET is not set
 CONFIG_OPENTHREAD_BR_AUTO_START=y
 CONFIG_OPENTHREAD_BR_START_WEB=y
-
-#
-# External coexist wire type and pin config
-#
-# end of External coexist wire type and pin config
+# CONFIG_OPENTHREAD_BR_SOFTAP_SETUP is not set
 # end of ESP Thread Border Router Example
 
 #
@@ -2163,8 +2177,7 @@ CONFIG_OPENTHREAD_PLATFORM_INFO="esp32s3"
 #
 # Thread Console
 #
-CONFIG_OPENTHREAD_CONSOLE_ENABLE=y
-CONFIG_OPENTHREAD_CONSOLE_TYPE_USB_SERIAL_JTAG=y
+# CONFIG_OPENTHREAD_CONSOLE_ENABLE is not set
 CONFIG_OPENTHREAD_CLI=y
 CONFIG_OPENTHREAD_CONSOLE_COMMAND_PREFIX="ot"
 # end of Thread Console
@@ -2293,14 +2306,7 @@ CONFIG_OPENTHREAD_LOG_LEVEL_DYNAMIC=y
 #
 # Thread Extensioned Features
 #
-CONFIG_OPENTHREAD_HEADER_CUSTOM=y
-
-#
-# OpenThread Custom Header Config
-#
-CONFIG_OPENTHREAD_CUSTOM_HEADER_PATH="./"
-CONFIG_OPENTHREAD_CUSTOM_HEADER_FILE_NAME="multi_pan_br.h"
-# end of OpenThread Custom Header Config
+# CONFIG_OPENTHREAD_HEADER_CUSTOM is not set
 # end of Thread Extensioned Features
 
 #
@@ -2615,6 +2621,28 @@ CONFIG_DEFAULT_PIN_TO_RCP_BOOT=8
 CONFIG_DEFAULT_PIN_TO_RCP_TX=17
 CONFIG_DEFAULT_PIN_TO_RCP_RX=18
 # end of OpenThread RCP Update
+
+#
+# Iperf
+#
+CONFIG_IPERF_DEF_SOCKET_RX_TIMEOUT=10
+CONFIG_IPERF_DEF_SOCKET_TCP_TX_TIMEOUT=10
+CONFIG_IPERF_DEF_TRAFFIC_TASK_PRIORITY=4
+CONFIG_IPERF_DEF_TRAFFIC_TASK_STACK=4096
+CONFIG_IPERF_DEF_REPORT_TASK_PRIORITY=10
+CONFIG_IPERF_DEF_REPORT_TASK_STACK=4096
+CONFIG_IPERF_DEF_TCP_TX_BUFFER_LEN=16384
+CONFIG_IPERF_DEF_TCP_RX_BUFFER_LEN=16384
+CONFIG_IPERF_DEF_IPV4_UDP_TX_BUFFER_LEN=1470
+CONFIG_IPERF_DEF_IPV6_UDP_TX_BUFFER_LEN=1450
+CONFIG_IPERF_DEF_UDP_RX_BUFFER_LEN=16384
+# end of Iperf
+
+#
+# Console Command: Iperf
+#
+# CONFIG_IPERF_CMD_DEFAULT_BW_MBPS is not set
+# end of Console Command: Iperf
 
 #
 # mDNS
