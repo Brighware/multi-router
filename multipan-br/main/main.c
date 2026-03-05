@@ -40,6 +40,23 @@
 
 /** TODO: Merge `esp_ot_br.c` and `esp_zigbee_gateway.c` in to this file.  */
 
+static const char *ZB_TAG = "ZB_GATEWAY";
+static const char *OT_TAG = "OTBR";
+
+/**
+* ZigBee Config ****
+ */
+/* Production configuration app data */
+typedef struct zb_app_production_config_s {
+    uint16_t version;
+    uint16_t manuf_code;
+    char manuf_name[16];
+} app_production_config_t;
+
+
+/**
+* OpenThread Config ****
+ */
 /*****************************************************************************/
 /**
  *  @fn         void app_main( void )
