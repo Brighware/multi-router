@@ -15,9 +15,12 @@
 #define __ESP_ZIGBEE_GATEWAY_H_USED__
 #include "esp_err.h"
 #include "esp_zigbee_core.h"
+#if CONFIG_ZB_ENABLE_CONSOLE == true
 #include "esp_zigbee_console.h"
+#endif
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include "esp_radio_spinel.h"
 
 /* Zigbee Configuration */
 #define MAX_CHILDREN                    10          /* the max amount of connected devices */
@@ -26,10 +29,10 @@
 #define ESP_ZB_GATEWAY_ENDPOINT         1           /* Gateway endpoint identifier */
 #define APP_PROD_CFG_CURRENT_VERSION    0x0001      /* Production configuration version */
 #define RCP_VERSION_MAX_SIZE            80
-#define HOST_RESET_PIN_TO_RCP_RESET     CONFIG_PIN_TO_RCP_RESET
-#define HOST_BOOT_PIN_TO_RCP_BOOT       CONFIG_PIN_TO_RCP_BOOT
-#define HOST_RX_PIN_TO_RCP_TX           CONFIG_PIN_TO_RCP_TX
-#define HOST_TX_PIN_TO_RCP_RX           CONFIG_PIN_TO_RCP_RX
+#define HOST_RESET_PIN_TO_RCP_RESET     CONFIG_PIN_TO_ZB_RCP_RESET
+#define HOST_BOOT_PIN_TO_RCP_BOOT       CONFIG_PIN_TO_ZB_RCP_BOOT
+#define HOST_RX_PIN_TO_RCP_TX           CONFIG_PIN_TO_ZB_RCP_TX
+#define HOST_TX_PIN_TO_RCP_RX           CONFIG_PIN_TO_ZB_RCP_RX
 
 /* Basic manufacturer information */
 #define ESP_MANUFACTURER_NAME "\x09""BRIGHWARE"      /* Customized manufacturer name */
@@ -44,12 +47,7 @@
         },                                                                              \
     }
 
-#if CONFIG_ZB_RADIO_NATIVE
-#define ESP_ZB_DEFAULT_RADIO_CONFIG()                           \
-    {                                                           \
-        .radio_mode = ZB_RADIO_MODE_NATIVE,                     \
-    }
-#else
+
 #define ESP_ZB_DEFAULT_RADIO_CONFIG()                           \
     {                                                           \
         .radio_mode = ZB_RADIO_MODE_UART_RCP,                   \
@@ -69,7 +67,7 @@
             .tx_pin = HOST_TX_PIN_TO_RCP_RX,                    \
         },                                                      \
     }
-#endif
+
 
 #define ESP_ZB_DEFAULT_HOST_CONFIG()                            \
     {                                                           \
@@ -83,7 +81,5 @@
         .update_baudrate = 460800, .firmware_dir = "/rcp_fw/ot_rcp", .target_chip = ESP32H2_CHIP,                                   \
     }
 
-
-    extern TaskHandle_t esp_zigbee_gateway(void);
-
-    #endif
+extern TaskHandle_t esp_zigbee_gateway(void);
+#endif

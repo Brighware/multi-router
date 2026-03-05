@@ -27,6 +27,7 @@
 #include "driver/uart.h"
 #include "border_router_launch.h"
 #include "esp_br_web.h"
+#include "esp_radio_spinel.h"
 
 #include "esp_vfs_dev.h"
 #include "esp_vfs_usb_serial_jtag.h"
@@ -35,15 +36,7 @@
 #include "esp_ot_br.h"
 #include "esp_zigbee_gateway.h"
 
-#if CONFIG_EXTERNAL_COEX_ENABLE
-#include "esp_coexist.h"
-#endif
-
 #define loop() while(1)
-
-static const char *ZB_TAG = "ZB_GATEWAY";
-static const char *OT_TAG = "OT_BR";
-
 
 void app_main (void )
 {
@@ -52,4 +45,6 @@ void app_main (void )
     loop(){
 
     }
+    vTaskDelete(zbHandle);
+    vTaskDelete(otHandle);
 }

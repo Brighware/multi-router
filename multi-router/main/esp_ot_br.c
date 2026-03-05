@@ -32,7 +32,9 @@
 #include "esp_coexist.h"
 #endif
 
-// #define TAG "esp_ot_br"
+#define OT_TASK_PRIORITY CONFIG_OPENTHREAD_TASK_PRIORITY
+#define OT_TASK_SIZE CONFIG_OPENTHREAD_TASK_SIZE 
+
 
 extern const uint8_t server_cert_pem_start[] asm("_binary_ca_cert_pem_start");
 extern const uint8_t server_cert_pem_end[] asm("_binary_ca_cert_pem_end");
@@ -48,12 +50,12 @@ static esp_err_t init_spiffs(void)
                                          .partition_label = CONFIG_RCP_PARTITION_NAME,
                                          .max_files = 10,
                                          .format_if_mount_failed = false};
-    ESP_RETURN_ON_ERROR(esp_vfs_spiffs_register(&rcp_fw_conf), TAG, "Failed to mount rcp firmware storage");
+    ESP_RETURN_ON_ERROR(esp_vfs_spiffs_register(&rcp_fw_conf), OT_TAG, "Failed to mount rcp firmware storage");
 #endif
 #if CONFIG_OPENTHREAD_BR_START_WEB
     esp_vfs_spiffs_conf_t web_server_conf = {
         .base_path = "/spiffs", .partition_label = "web_storage", .max_files = 10, .format_if_mount_failed = false};
-    ESP_RETURN_ON_ERROR(esp_vfs_spiffs_register(&web_server_conf), TAG, "Failed to mount web storage");
+    ESP_RETURN_ON_ERROR(esp_vfs_spiffs_register(&web_server_conf), OT_TAG, "Failed to mount web storage");
 #endif
     return ESP_OK;
 }
@@ -129,7 +131,7 @@ void esp_ot_task( void *pvParameters )
 TaskHandle_t esp_ot_br( void )
 {
     otHandle = NULL;
-    xTaskCreate(esp_ot_task, OT_TAG, 4096, NULL, 6, &otHandle);
+    xTaskCreate(esp_ot_task, OT_TAG, OT_TASK_SIZE, NULL, OT_TASK_PRIORITY, &otHandle);
     configASSERT( otHandle );
     return(otHandle);
 }

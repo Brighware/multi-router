@@ -25,6 +25,7 @@
 
 #define RCP_FIRMWARE_DIR "/spiffs/ot_rcp"
 
+
 #if CONFIG_OPENTHREAD_RADIO_SPINEL_UART
 #define ESP_OPENTHREAD_DEFAULT_RADIO_CONFIG()              \
     {                                                      \
@@ -54,9 +55,9 @@
             .dma_channel = 2,                              \
             .spi_interface =                               \
                 {                                          \
-                    .mosi_io_num = CONFIG_PIN_TO_RCP_MOSI, \
-                    .miso_io_num = CONFIG_PIN_TO_RCP_MISO, \
-                    .sclk_io_num = CONFIG_PIN_TO_RCP_SCLK, \
+                    .mosi_io_num = CONFIG_PIN_TO_OT_RCP_MOSI, \
+                    .miso_io_num = CONFIG_PIN_TO_OT_RCP_MISO, \
+                    .sclk_io_num = CONFIG_PIN_TO_OT_RCP_SCLK, \
                     .quadwp_io_num = -1,                   \
                     .quadhd_io_num = -1,                   \
                 },                                         \
@@ -66,10 +67,10 @@
                     .input_delay_ns = 100,                 \
                     .mode = 0,                             \
                     .clock_speed_hz = 2500 * 1000,         \
-                    .spics_io_num = CONFIG_PIN_TO_RCP_CS,  \
+                    .spics_io_num = CONFIG_PIN_TO_OT_RCP_CS,  \
                     .queue_size = 5,                       \
                 },                                         \
-            .intr_pin = CONFIG_PIN_TO_RCP_BOOT,            \
+            .intr_pin = CONFIG_PIN_TO_OT_RCP_BOOT,            \
         },                                                 \
     }
 #endif // CONFIG_OPENTHREAD_RADIO_SPINEL_UART OR  CONFIG_OPENTHREAD_RADIO_SPINEL_SPI
@@ -162,3 +163,4 @@ extern TaskHandle_t esp_ot_br( void );
 
 
 #endif
+

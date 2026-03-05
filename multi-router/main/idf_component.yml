@@ -3,7 +3,7 @@ dependencies:
   espressif/mdns: "^1.0.0"
   espressif/esp-zboss-lib: "~1.6.0"
   espressif/esp-zigbee-lib: "~1.6.0"
-  #espressif/esp-serial-flasher: "~0.0.4"
+  espressif/esp-serial-flasher: "~1.8.0"
   espressif/esp_ot_cli_extension:
     version: "~1.4.0"
   espressif/esp_rcp_update:

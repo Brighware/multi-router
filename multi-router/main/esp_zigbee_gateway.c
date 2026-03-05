@@ -32,9 +32,9 @@
 #include "esp_vfs_usb_serial_jtag.h"
 #include "driver/usb_serial_jtag.h"
 
-#if CONFIG_OPENTHREAD_SPINEL_ONLY
 #include "esp_radio_spinel.h"
-#endif
+#include "driver/uart.h"
+
 
 static const char *ZB_TAG = "ZB_GATEWAY";
 static TaskHandle_t zbHandle;
@@ -46,6 +46,8 @@ typedef struct app_production_config_s {
     char manuf_name[16];
 } app_production_config_t;
 
+
+#if CONFIG_ZB_ENABLE_CONSOLE == true
 /* Note: Please select the correct console output port based on the development board in menuconfig */
 #if CONFIG_ESP_CONSOLE_USB_SERIAL_JTAG
 esp_err_t esp_zb_gateway_console_init(void)
@@ -70,7 +72,7 @@ esp_err_t esp_zb_gateway_console_init(void)
     return ret;
 }
 #endif
-
+#endif
 #if(CONFIG_ZIGBEE_GW_AUTO_UPDATE_RCP)
 static void esp_zb_gateway_update_rcp(void)
 {
@@ -86,16 +88,16 @@ static void esp_zb_gateway_board_try_update(const char *rcp_version_str)
 {
     char version_str[RCP_VERSION_MAX_SIZE];
     if (esp_rcp_load_version_in_storage(version_str, sizeof(version_str)) == ESP_OK) {
-        ESP_LOGI(TAG, "Storage RCP Version: %s", version_str);
+        ESP_LOGI(ZB_TAG, "Storage RCP Version: %s", version_str);
         if (strcmp(version_str, rcp_version_str)) {
-            ESP_LOGI(TAG, "*** NOT MATCH VERSION! ***");
+            ESP_LOGI(ZB_TAG, "*** NOT MATCH VERSION! ***");
             esp_zb_gateway_update_rcp();
         } else {
-            ESP_LOGI(TAG, "*** MATCH VERSION! ***");
+            ESP_LOGI(ZB_TAG, "*** MATCH VERSION! ***");
             esp_rcp_mark_image_verified(true);
         }
     } else {
-        ESP_LOGI(TAG, "RCP firmware not found in storage, will reboot to try next image");
+        ESP_LOGI(ZB_TAG, "RCP firmware not found in storage, will reboot to try next image");
         esp_rcp_mark_image_verified(false);
         esp_restart();
     }
@@ -113,7 +115,7 @@ static esp_err_t init_spiffs(void)
 
 static void bdb_start_top_level_commissioning_cb(uint8_t mode_mask)
 {
-    ESP_RETURN_ON_FALSE(esp_zb_bdb_start_top_level_commissioning(mode_mask) == ESP_OK, , TAG, "Failed to start Zigbee bdb commissioning");
+    ESP_RETURN_ON_FALSE(esp_zb_bdb_start_top_level_commissioning(mode_mask) == ESP_OK, , ZB_TAG, "Failed to start Zigbee bdb commissioning");
 }
 
 void esp_zb_app_signal_handler(esp_zb_app_signal_t *signal_struct)
@@ -126,30 +128,30 @@ void esp_zb_app_signal_handler(esp_zb_app_signal_t *signal_struct)
     switch (sig_type) {
     case ESP_ZB_ZDO_SIGNAL_SKIP_STARTUP:
 #if CONFIG_EXAMPLE_CONNECT_WIFI
-        ESP_RETURN_ON_FALSE(example_connect() == ESP_OK, , TAG, "Failed to connect to Wi-Fi");
+        ESP_RETURN_ON_FALSE(example_connect() == ESP_OK, , ZB_TAG, "Failed to connect to Wi-Fi");
 #if CONFIG_ESP_COEX_SW_COEXIST_ENABLE
-        ESP_RETURN_ON_FALSE(esp_wifi_set_ps(WIFI_PS_MIN_MODEM) == ESP_OK, , TAG, "Failed to set Wi-Fi minimum modem power save type");
+        ESP_RETURN_ON_FALSE(esp_wifi_set_ps(WIFI_PS_MIN_MODEM) == ESP_OK, , ZB_TAG, "Failed to set Wi-Fi minimum modem power save type");
         esp_coex_wifi_i154_enable();
 #else
-        ESP_RETURN_ON_FALSE(esp_wifi_set_ps(WIFI_PS_NONE) == ESP_OK, , TAG, "Failed to set Wi-Fi no power save type");
+        ESP_RETURN_ON_FALSE(esp_wifi_set_ps(WIFI_PS_NONE) == ESP_OK, , ZB_TAG, "Failed to set Wi-Fi no power save type");
 #endif
 #endif
-        ESP_LOGI(TAG, "Initialize Zigbee stack");
+        ESP_LOGI(ZB_TAG, "Initialize Zigbee stack");
         esp_zb_bdb_start_top_level_commissioning(ESP_ZB_BDB_MODE_INITIALIZATION);
         break;
     case ESP_ZB_BDB_SIGNAL_DEVICE_FIRST_START:
     case ESP_ZB_BDB_SIGNAL_DEVICE_REBOOT:
         if (err_status == ESP_OK) {
-            ESP_LOGI(TAG, "Device started up in%s factory-reset mode", esp_zb_bdb_is_factory_new() ? "" : " non");
+            ESP_LOGI(ZB_TAG, "Device started up in%s factory-reset mode", esp_zb_bdb_is_factory_new() ? "" : " non");
             if (esp_zb_bdb_is_factory_new()) {
-                ESP_LOGI(TAG, "Start network formation");
+                ESP_LOGI(ZB_TAG, "Start network formation");
                 esp_zb_bdb_start_top_level_commissioning(ESP_ZB_BDB_MODE_NETWORK_FORMATION);
             } else {
                 esp_zb_bdb_open_network(180);
-                ESP_LOGI(TAG, "Device rebooted");
+                ESP_LOGI(ZB_TAG, "Device rebooted");
             }
         } else {
-            ESP_LOGW(TAG, "%s failed with status: %s, retrying", esp_zb_zdo_signal_to_string(sig_type),
+            ESP_LOGW(ZB_TAG, "%s failed with status: %s, retrying", esp_zb_zdo_signal_to_string(sig_type),
                      esp_err_to_name(err_status));
             esp_zb_scheduler_alarm((esp_zb_callback_t)bdb_start_top_level_commissioning_cb,
                                    ESP_ZB_BDB_MODE_INITIALIZATION, 1000);
@@ -159,48 +161,48 @@ void esp_zb_app_signal_handler(esp_zb_app_signal_t *signal_struct)
         if (err_status == ESP_OK) {
             esp_zb_ieee_addr_t ieee_address;
             esp_zb_get_long_address(ieee_address);
-            ESP_LOGI(TAG, "Formed network successfully (Extended PAN ID: %02x:%02x:%02x:%02x:%02x:%02x:%02x:%02x, PAN ID: 0x%04hx, Channel:%d, Short Address: 0x%04hx)",
+            ESP_LOGI(ZB_TAG, "Formed network successfully (Extended PAN ID: %02x:%02x:%02x:%02x:%02x:%02x:%02x:%02x, PAN ID: 0x%04hx, Channel:%d, Short Address: 0x%04hx)",
                      ieee_address[7], ieee_address[6], ieee_address[5], ieee_address[4],
                      ieee_address[3], ieee_address[2], ieee_address[1], ieee_address[0],
                      esp_zb_get_pan_id(), esp_zb_get_current_channel(), esp_zb_get_short_address());
             esp_zb_bdb_start_top_level_commissioning(ESP_ZB_BDB_MODE_NETWORK_STEERING);
         } else {
-            ESP_LOGI(TAG, "Restart network formation (status: %s)", esp_err_to_name(err_status));
+            ESP_LOGI(ZB_TAG, "Restart network formation (status: %s)", esp_err_to_name(err_status));
             esp_zb_scheduler_alarm((esp_zb_callback_t)bdb_start_top_level_commissioning_cb, ESP_ZB_BDB_MODE_NETWORK_FORMATION, 1000);
         }
         break;
     case ESP_ZB_BDB_SIGNAL_STEERING:
         if (err_status == ESP_OK) {
-            ESP_LOGI(TAG, "Network steering started");
+            ESP_LOGI(ZB_TAG, "Network steering started");
         }
         break;
     case ESP_ZB_ZDO_SIGNAL_DEVICE_ANNCE:
         dev_annce_params = (esp_zb_zdo_signal_device_annce_params_t *)esp_zb_app_signal_get_params(p_sg_p);
-        ESP_LOGI(TAG, "New device commissioned or rejoined (short: 0x%04hx)", dev_annce_params->device_short_addr);
+        ESP_LOGI(ZB_TAG, "New device commissioned or rejoined (short: 0x%04hx)", dev_annce_params->device_short_addr);
         break;
     case ESP_ZB_NWK_SIGNAL_PERMIT_JOIN_STATUS:
         if (err_status == ESP_OK) {
             if (*(uint8_t *)esp_zb_app_signal_get_params(p_sg_p)) {
-                ESP_LOGI(TAG, "Network(0x%04hx) is open for %d seconds", esp_zb_get_pan_id(), *(uint8_t *)esp_zb_app_signal_get_params(p_sg_p));
+                ESP_LOGI(ZB_TAG, "Network(0x%04hx) is open for %d seconds", esp_zb_get_pan_id(), *(uint8_t *)esp_zb_app_signal_get_params(p_sg_p));
             } else {
-                ESP_LOGW(TAG, "Network(0x%04hx) closed, devices joining not allowed.", esp_zb_get_pan_id());
+                ESP_LOGW(ZB_TAG, "Network(0x%04hx) closed, devices joining not allowed.", esp_zb_get_pan_id());
             }
         }
         break;
     case ESP_ZB_ZDO_SIGNAL_PRODUCTION_CONFIG_READY:
-        ESP_LOGI(TAG, "Production configuration is ready");
+        ESP_LOGI(ZB_TAG, "Production configuration is ready");
         if (err_status == ESP_OK) {
             app_production_config_t *prod_cfg = (app_production_config_t *)esp_zb_app_signal_get_params(p_sg_p);
             if (prod_cfg->version == APP_PROD_CFG_CURRENT_VERSION) {
-                ESP_LOGI(TAG, "Manufacturer_code: 0x%x, manufacturer_name:%s", prod_cfg->manuf_code, prod_cfg->manuf_name);
+                ESP_LOGI(ZB_TAG, "Manufacturer_code: 0x%x, manufacturer_name:%s", prod_cfg->manuf_code, prod_cfg->manuf_name);
                 esp_zb_set_node_descriptor_manufacturer_code(prod_cfg->manuf_code);
             }
         } else {
-            ESP_LOGW(TAG, "Production configuration is not present");
+            ESP_LOGW(ZB_TAG, "Production configuration is not present");
         }
         break;
     default:
-        ESP_LOGI(TAG, "ZDO signal: %s (0x%x), status: %s", esp_zb_zdo_signal_to_string(sig_type), sig_type,
+        ESP_LOGI(ZB_TAG, "ZDO signal: %s (0x%x), status: %s", esp_zb_zdo_signal_to_string(sig_type), sig_type,
                  esp_err_to_name(err_status));
         break;
     }
@@ -209,36 +211,34 @@ void esp_zb_app_signal_handler(esp_zb_app_signal_t *signal_struct)
 void rcp_error_handler(void)
 {
 #if(CONFIG_ZIGBEE_GW_AUTO_UPDATE_RCP)
-    ESP_LOGI(TAG, "Re-flashing RCP");
+    ESP_LOGI(ZB_TAG, "Re-flashing RCP");
     esp_zb_gateway_update_rcp();
 #endif
     esp_restart();
 }
 
-#if CONFIG_OPENTHREAD_SPINEL_ONLY
 static esp_err_t check_ot_rcp_version(void)
 {
     char internal_rcp_version[RCP_VERSION_MAX_SIZE];
-    ESP_RETURN_ON_ERROR(esp_radio_spinel_rcp_version_get(internal_rcp_version, ESP_RADIO_SPINEL_ZIGBEE), TAG, "Fail to get rcp version from radio spinel");
-    ESP_LOGI(TAG, "Running RCP Version: %s", internal_rcp_version);
+    ESP_RETURN_ON_ERROR(esp_radio_spinel_rcp_version_get(internal_rcp_version, ESP_RADIO_SPINEL_ZIGBEE), ZB_TAG, "Fail to get rcp version from radio spinel");
+    ESP_LOGI(ZB_TAG, "Running RCP Version: %s", internal_rcp_version);
 #if(CONFIG_ZIGBEE_GW_AUTO_UPDATE_RCP)
     esp_zb_gateway_board_try_update(internal_rcp_version);
 #endif
     return ESP_OK;
 }
-#endif
+
 
 static void esp_zb_task(void *pvParameters)
 {
-#if CONFIG_OPENTHREAD_SPINEL_ONLY
+
     esp_radio_spinel_register_rcp_failure_handler(rcp_error_handler, ESP_RADIO_SPINEL_ZIGBEE);
-#endif
+
     /* initialize Zigbee stack */
     esp_zb_cfg_t zb_nwk_cfg = ESP_ZB_ZC_CONFIG();
     esp_zb_init(&zb_nwk_cfg);
-#if CONFIG_OPENTHREAD_SPINEL_ONLY
+
     ESP_ERROR_CHECK(check_ot_rcp_version());
-#endif
     esp_zb_set_primary_network_channel_set(ESP_ZB_PRIMARY_CHANNEL_MASK);
     esp_zb_ep_list_t *ep_list = esp_zb_ep_list_create();
     esp_zb_cluster_list_t *cluster_list = esp_zb_zcl_cluster_list_create();
@@ -273,8 +273,10 @@ TaskHandle_t esp_zigbee_gateway( void )
     ESP_ERROR_CHECK(nvs_flash_init());
     ESP_ERROR_CHECK(esp_netif_init());
     ESP_ERROR_CHECK(esp_event_loop_create_default());
+#if CONFIG_ZB_ENABLE_CONSOLE == true
 #if CONFIG_ESP_CONSOLE_USB_SERIAL_JTAG
     ESP_ERROR_CHECK(esp_zb_gateway_console_init());
+#endif
 #endif
 
 #if(CONFIG_ZIGBEE_GW_AUTO_UPDATE_RCP)
