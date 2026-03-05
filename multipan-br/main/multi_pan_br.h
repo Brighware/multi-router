@@ -30,6 +30,7 @@
 #define ESP_MANUFACTURER_NAME "\x09""BRIGHWARE"      /* Customized manufacturer name */
 #define ESP_MODEL_IDENTIFIER "\x07""WINKHAUS-ZB" /* Customized model identifier */
 
+#define RCP_FIRMWARE_DIR "/spiffs/rcp"
 
 #define ESP_ZB_ZC_CONFIG()                                                              \
     {                                                                                   \
@@ -77,7 +78,7 @@
 /**
 **  OpenThread Configuration **
  */
-#define RCP_FIRMWARE_DIR "/spiffs/rcp"
+
 
 #if CONFIG_OPENTHREAD_RADIO_SPINEL_UART
 #define ESP_OPENTHREAD_DEFAULT_RADIO_CONFIG()              \
@@ -226,8 +227,6 @@ typedef enum {
 } e_EventList;
 
 
-extern void esp_ot_task( void *pvParameters );
-extern void esp_zigbee_gateway(void);
 
 /*****************************************************************************/
 /**
