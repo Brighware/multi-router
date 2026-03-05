@@ -38,6 +38,18 @@
 
 #define loop() while(1)
 
+/** TODO: Merge `esp_ot_br.c` and `esp_zigbee_gateway.c` in to this file.  */
+
+/*****************************************************************************/
+/**
+ *  @fn         void app_main( void )
+ *  @brief      Program entry-point
+ *  @param      None
+ *  @retval     None
+ *  @par
+ *
+ *  @note Main Loop
+ *****************************************************************************/
 void app_main (void )
 {
     TaskHandle_t zbHandle = esp_zigbee_gateway();
