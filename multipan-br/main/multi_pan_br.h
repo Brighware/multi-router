@@ -118,26 +118,11 @@
 #error RCP target type not supported.
 #endif
 
-#if CONFIG_AUTO_UPDATE_RCP
-#define ESP_OPENTHREAD_RCP_UPDATE_CONFIG()                                                                   \
-    {                                                                                                        \
-        .rcp_type = RCP_TYPE_UART, .uart_rx_pin = CONFIG_PIN_TO_RCP_TX, .uart_tx_pin = CONFIG_PIN_TO_RCP_RX, \
-        .uart_port = 1, .uart_baudrate = 115200, .reset_pin = CONFIG_PIN_TO_RCP_RESET,                       \
-        .boot_pin = CONFIG_PIN_TO_RCP_BOOT, .update_baudrate = 460800,                                       \
-        .firmware_dir = "/" CONFIG_RCP_PARTITION_NAME "/rcp", .target_chip = ESP_BR_RCP_TARGET_ID         \
-    }
-#else
-#define ESP_OPENTHREAD_RCP_UPDATE_CONFIG() \
-    {                                      \
-        0                                  \
-    }
-#endif
 
 
 #define ESP_OPENTHREAD_DEFAULT_HOST_CONFIG()                        \
     {                                                               \
-        .host_connection_mode = HOST_CONNECTION_MODE_CLI_USB,       \
-        .host_usb_config = USB_SERIAL_JTAG_DRIVER_CONFIG_DEFAULT(), \
+        .host_connection_mode = HOST_CONNECTION_MODE_NONE,   \
     }
 
 #define ESP_OPENTHREAD_DEFAULT_PORT_CONFIG()                                            \
@@ -145,31 +130,6 @@
         .storage_partition_name = "nvs", .netif_queue_size = 10, .task_queue_size = 10, \
     }
 
-#if CONFIG_EXTERNAL_COEX_ENABLE
-#if CONFIG_EXTERNAL_COEX_WIRE_TYPE == EXTERNAL_COEXIST_WIRE_1
-#define ESP_OPENTHREAD_DEFAULT_EXTERNAL_COEX_CONFIG() \
-    {                                                 \
-        .request = CONFIG_EXTERNAL_COEX_REQUEST_PIN,  \
-    }
-#elif CONFIG_EXTERNAL_COEX_WIRE_TYPE == EXTERNAL_COEXIST_WIRE_2
-#define ESP_OPENTHREAD_DEFAULT_EXTERNAL_COEX_CONFIG()                                         \
-    {                                                                                         \
-        .request = CONFIG_EXTERNAL_COEX_REQUEST_PIN, .grant = CONFIG_EXTERNAL_COEX_GRANT_PIN, \
-    }
-#elif CONFIG_EXTERNAL_COEX_WIRE_TYPE == EXTERNAL_COEXIST_WIRE_3
-#define ESP_OPENTHREAD_DEFAULT_EXTERNAL_COEX_CONFIG()                                               \
-    {                                                                                               \
-        .request = CONFIG_EXTERNAL_COEX_REQUEST_PIN, .priority = CONFIG_EXTERNAL_COEX_PRIORITY_PIN, \
-        .grant = CONFIG_EXTERNAL_COEX_GRANT_PIN,                                                    \
-    }
-#elif CONFIG_EXTERNAL_COEX_WIRE_TYPE == EXTERNAL_COEXIST_WIRE_4
-#define ESP_OPENTHREAD_DEFAULT_EXTERNAL_COEX_CONFIG()                                               \
-    {                                                                                               \
-        .request = CONFIG_EXTERNAL_COEX_REQUEST_PIN, .priority = CONFIG_EXTERNAL_COEX_PRIORITY_PIN, \
-        .grant = CONFIG_EXTERNAL_COEX_GRANT_PIN, .tx_line = CONFIG_EXTERNAL_COEX_TX_LINE_PIN,       \
-    }
-#endif
-#endif // CONFIG_EXTERNAL_COEX_ENABLE
 
 /** TODO:  Merge `esp_ot_br.h` and 'esp_zigbee_gateway.h` in to this file  */
 
@@ -180,7 +140,6 @@ typedef enum {
     _ZB_GW,
     _NUM_OF_EVENTS
 } e_EventList;
-
 
 
 /*****************************************************************************/

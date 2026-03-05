@@ -38,10 +38,9 @@
 #define ZB_TASK_PRIORITY 5
 #define ZB_TASK_SIZE 4096
 
+#define HOSTNAME CONFIG_MP_BR_HOSTNAME
 
-static const char *ZB_TAG = "ZB_GATEWAY";
-static const char *OT_TAG = "OTBR";
-static const char *HOSTNAME = "multi-pan BR";
+static const char *TAG = "MULTIPAN_BR";
 
 static TaskHandle_t zbHandle;
 
@@ -55,6 +54,17 @@ typedef struct zb_app_production_config_s {
     uint16_t manuf_code;
     char manuf_name[16];
 } app_production_config_t;
+
+
+static esp_err_t init_spiffs(void)
+{
+#if CONFIG_OPENTHREAD_BR_START_WEB
+    esp_vfs_spiffs_conf_t web_server_conf = {
+        .base_path = "/spiffs", .partition_label = "web_storage", .max_files = 10, .format_if_mount_failed = false};
+    ESP_RETURN_ON_ERROR(esp_vfs_spiffs_register(&web_server_conf), TAG, "Failed to mount web storage");
+#endif
+    return ESP_OK;
+}
 
 /*******************************************************************************
 ************************* ZigBee Config ****************************************
@@ -95,13 +105,35 @@ void app_main (void )
     // * SpiSpinelInterface (The Spi Spinel Interface needs an eventfd.)
     max_eventfd++;
 #endif
-#if CONFIG_OPENTHREAD_RADIO_TREL
-    // * TREL reception (The Thread Radio Encapsulation Link needs an eventfd for reception.)
-    max_eventfd++;
-#endif
 
     esp_vfs_eventfd_config_t eventfd_config = {
         .max_fds = max_eventfd,
     };
+
+    esp_openthread_config_t openthread_config = {
+        .netif_config = ESP_NETIF_DEFAULT_OPENTHREAD(),
+        .platform_config =
+            {
+                .radio_config = ESP_OPENTHREAD_DEFAULT_RADIO_CONFIG(),
+                .host_config = ESP_OPENTHREAD_DEFAULT_HOST_CONFIG(),
+                .port_config = ESP_OPENTHREAD_DEFAULT_PORT_CONFIG(),
+            },
+    };
+
+    ESP_ERROR_CHECK(esp_vfs_eventfd_register(&eventfd_config));
+
+    ESP_ERROR_CHECK(nvs_flash_init());
+    ESP_ERROR_CHECK(init_spiffs());
+    ESP_ERROR_CHECK(esp_netif_init());
+    ESP_ERROR_CHECK(esp_event_loop_create_default());
+    ESP_ERROR_CHECK(mdns_init());
+    ESP_ERROR_CHECK(mdns_hostname_set(HOSTNAME));
+
+    
+#if CONFIG_OPENTHREAD_BR_START_WEB
+    esp_br_web_start("/spiffs");
+#endif
+
+launch_openthread_border_router(&openthread_config, &TAG);
 
 }
