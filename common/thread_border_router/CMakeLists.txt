@@ -1,4 +1,4 @@
-set(requires esp_ot_cli_extension openthread protocol_examples_common vfs esp_wifi esp_eth esp_rcp_update)
+set(requires esp_ot_cli_extension openthread protocol_examples_common vfs esp_wifi esp_eth esp_rcp_update ot_examples_common)
 
 if(CONFIG_OPENTHREAD_CLI_OTA)
     list(APPEND requires esp_http_client esp_br_http_ota)
@@ -8,3 +8,7 @@ idf_component_register(SRC_DIRS "src"
                        INCLUDE_DIRS "include"
                        REQUIRES "${requires}"
 )
+
+if(CONFIG_OPENTHREAD_BR_SOFTAP_SETUP)
+    idf_component_optional_requires(PRIVATE esp_ot_br_server)
+endif()
