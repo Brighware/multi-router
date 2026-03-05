@@ -31,9 +31,6 @@
 #include "esp_vfs_dev.h"
 #include "esp_vfs_usb_serial_jtag.h"
 #include "driver/usb_serial_jtag.h"
-#if CONFIG_EXTERNAL_COEX_ENABLE
-#include "esp_coexist.h"
-#endif
 
 #include "multi_pan_br.h"
 

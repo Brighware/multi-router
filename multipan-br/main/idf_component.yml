@@ -19,8 +19,8 @@ dependencies:
     override_path: "../../components/esp-zigbee-console"
   protocol_examples_common:
     path: /home/sbrigh/projects/esp32/esp-idf/examples/common_components/protocol_examples_common
-  ot_examples_common:
-    path: /home/sbrigh/projects/esp32/esp-idf/examples/openthread/ot_common_components/ot_examples_common
+  # ot_examples_common:
+  #   path: /home/sbrigh/projects/esp32/esp-idf/examples/openthread/ot_common_components/ot_examples_common
   ## Required IDF version
   idf:
     version: ">=5.1.0"
