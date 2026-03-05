@@ -1,12 +1,12 @@
+config ZB_RCP_UART_ENABLED
+    bool
+    default True
 menu "ESP Zigbee gateway rcp"
 
     config ZB_ENABLE_CONSOLE
       bool 'Enable ZigBee Console'
       default False
-    config ZB_RCP_UART_ENABLED
-      bool 'ZigBee UART RCP'
-      default True
-      
+  
     depends on ZB_RCP_UART_ENABLED
     menu "Board Configuration"
         config PIN_TO_ZB_RCP_RESET
