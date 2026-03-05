@@ -34,11 +34,8 @@
 #if CONFIG_EXTERNAL_COEX_ENABLE
 #include "esp_coexist.h"
 #endif
-//#include "esp_ot_br.h"
-//#include "esp_zigbee_gateway.h"
-#include "multi_pan_br.h"
 
-#define loop() while(1)
+#include "multi_pan_br.h"
 
 
 #define ZB_TASK_PRIORITY 5
