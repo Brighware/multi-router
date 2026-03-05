@@ -1,6 +1,8 @@
 #ifndef __MULTI_PAN_BR_H_USED__
 #define __MULTI_PAN_BR_H_USED__
 
+#include "esp_err.h"
+#include "esp_zigbee_core.h"
 #if CONFIG_ZB_ENABLE_CONSOLE == true
 #include "esp_zigbee_console.h"
 #endif
@@ -65,7 +67,7 @@
 
 #define ESP_ZB_DEFAULT_HOST_CONFIG()                            \
     {                                                           \
-        .host_connection_mode = ZB_HOST_CONNECTION_MODE_NONE,   \
+        .host_connection_mode = HOST_CONNECTION_MODE_NONE,   \
     }
 
 #define ESP_ZB_RCP_UPDATE_CONFIG()                                                                                                  \

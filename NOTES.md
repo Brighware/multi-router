@@ -32,4 +32,4 @@
 ## Sources
 [esp_ot_br.c](https://github.com/espressif/esp-thread-br/blob/main/examples/basic_thread_border_router/main/esp_ot_br.c)
 [esp_zigbee_gateway.c](https://github.com/espressif/esp-zigbee-sdk/blob/main/examples/esp_zigbee_gateway/main/esp_zigbee_gateway.c)
-
+[thread_border_router.c](https://github.com/espressif/esp-thread-br/blob/main/examples/common/thread_border_router/src/border_router_launch.c)
