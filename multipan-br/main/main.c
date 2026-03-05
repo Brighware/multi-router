@@ -134,6 +134,6 @@ void app_main (void )
     esp_br_web_start("/spiffs");
 #endif
 
-launch_openthread_border_router(&openthread_config, &TAG);
+launch_openthread_border_router(&openthread_config, TAG);
 
 }
