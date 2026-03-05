@@ -5,4 +5,4 @@ set(EXTRA_COMPONENT_DIRS
     /home/sbrigh/projects/esp32/esp-idf/examples/common_components/protocol_examples_common
     )
 include(/home/sbrigh/projects/esp32/esp-idf/tools/cmake/project.cmake)
-project(multi_router)
+project(multipan-br)
