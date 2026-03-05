@@ -77,7 +77,7 @@
 /**
 **  OpenThread Configuration **
  */
-#define RCP_FIRMWARE_DIR "/spiffs/ot_rcp"
+#define RCP_FIRMWARE_DIR "/spiffs/rcp"
 
 #if CONFIG_OPENTHREAD_RADIO_SPINEL_UART
 #define ESP_OPENTHREAD_DEFAULT_RADIO_CONFIG()              \
@@ -143,7 +143,7 @@
         .rcp_type = RCP_TYPE_UART, .uart_rx_pin = CONFIG_PIN_TO_RCP_TX, .uart_tx_pin = CONFIG_PIN_TO_RCP_RX, \
         .uart_port = 1, .uart_baudrate = 115200, .reset_pin = CONFIG_PIN_TO_RCP_RESET,                       \
         .boot_pin = CONFIG_PIN_TO_RCP_BOOT, .update_baudrate = 460800,                                       \
-        .firmware_dir = "/ot_rcp" CONFIG_RCP_PARTITION_NAME "/rcp_fw", .target_chip = ESP_BR_RCP_TARGET_ID         \
+        .firmware_dir = "/" CONFIG_RCP_PARTITION_NAME "/rcp", .target_chip = ESP_BR_RCP_TARGET_ID         \
     }
 #else
 #define ESP_OPENTHREAD_RCP_UPDATE_CONFIG() \

@@ -41,25 +41,18 @@
 #define loop() while(1)
 
 
-#define OT_TASK_PRIORITY CONFIG_OPENTHRAD_TASK_PRIORITY
-#define OT_TASK_SIZE CONFIG_OPENATHEAD_TASK_SIZE 
+#define ZB_TASK_PRIORITY 5
+#define ZB_TASK_SIZE 4096
 
-#define ZB_TASK_PRIORITY CONFIG_ZIGBEE_TASK_PRIORITY
-#define ZB_TASK_SIZE CONFIG_ZIGBEE_TASK_SIZE 
-
-/** TODO: Merge `esp_ot_br.c` and `esp_zigbee_gateway.c` in to this file.  */
 
 static const char *ZB_TAG = "ZB_GATEWAY";
 static const char *OT_TAG = "OTBR";
 static const char *HOSTNAME = "multi-pan BR";
 
-static TaskHandle_t otHandle;
 static TaskHandle_t zbHandle;
 
 extern const uint8_t server_cert_pem_start[] asm("_binary_ca_cert_pem_start");
 extern const uint8_t server_cert_pem_end[] asm("_binary_ca_cert_pem_end");
-
-static esp_openthread_platform_config_t platform_config ;
 
 
 /* Production configuration app data */
@@ -138,14 +131,6 @@ static void esp_zb_gateway_board_try_update(const char *rcp_version_str)
     }
 }
 
-static esp_err_t zb_init_spiffs(void)
-{
-    esp_vfs_spiffs_conf_t rcp_fw_conf = {
-        .base_path = "/rcp_fw", .partition_label = "rcp_fw", .max_files = 10, .format_if_mount_failed = false
-    };
-    esp_vfs_spiffs_register(&rcp_fw_conf);
-    return ESP_OK;
-}
 #endif
 
 static void bdb_start_top_level_commissioning_cb(uint8_t mode_mask)
@@ -294,36 +279,9 @@ static void esp_zb_task(void *pvParameters)
     ESP_ERROR_CHECK(esp_zb_start(false));
     esp_zb_stack_main_loop();
     esp_rcp_update_deinit();
-    vTaskDelete(NULL);
+    vTaskDelete(zbHandle);
 }
 
-/** app_main()  */
-void  esp_zigbee_gateway( void )
-{
-    esp_zb_platform_config_t zb_config = {
-        .radio_config = ESP_ZB_DEFAULT_RADIO_CONFIG(),
-        .host_config = ESP_ZB_DEFAULT_HOST_CONFIG(),
-    };
-    ESP_ERROR_CHECK(esp_zb_platform_config(&zb_config));
-    ESP_ERROR_CHECK(nvs_flash_init());
-    ESP_ERROR_CHECK(esp_netif_init());
-    ESP_ERROR_CHECK(esp_event_loop_create_default());
-#if CONFIG_ZB_ENABLE_CONSOLE == true
-#if CONFIG_ESP_CONSOLE_USB_SERIAL_JTAG
-    ESP_ERROR_CHECK(esp_zb_gateway_console_init());
-#endif
-#endif
-
-#if(CONFIG_ZIGBEE_GW_AUTO_UPDATE_RCP)
-    esp_rcp_update_config_t zb_rcp_update_config = ESP_ZB_RCP_UPDATE_CONFIG();
-    ESP_ERROR_CHECK(zb_init_spiffs());
-    ESP_ERROR_CHECK(esp_rcp_update_init(&zb_rcp_update_config));
-#endif
-    zbHandle = NULL;
-    xTaskCreate(esp_zb_task, ZB_TAG, 4096, NULL, 5, &zbHandle);
-    configASSERT( zbHandle );
-    return(zbHandle);
-}
 
  /**********************************ZIGBEE**END****************************/
 
@@ -360,62 +318,6 @@ static void ot_br_external_coexist_init(void)
 #endif /* CONFIG_EXTERNAL_COEX_ENABLE */
 
 
-
-/** app_main()  */
-void esp_ot_task( void *pvParameters )
-{
-    // Used eventfds:
-    // * netif
-    // * task queue
-    // * border router
-    size_t ot_max_eventfd = 3;
-
-#if CONFIG_OPENTHREAD_RADIO_SPINEL_SPI
-    // * SpiSpinelInterface (The Spi Spinel Interface needs an eventfd.)
-    ot_max_eventfd++;
-#endif
-#if CONFIG_OPENTHREAD_RADIO_TREL
-    // * TREL reception (The Thread Radio Encapsulation Link needs an eventfd for reception.)
-    ot_max_eventfd++;
-#endif
-    esp_vfs_eventfd_config_t ot_eventfd_config = {
-        .max_fds = ot_max_eventfd,
-    };
-
-    esp_openthread_platform_config_t ot_platform_config = {
-        .radio_config = ESP_OPENTHREAD_DEFAULT_RADIO_CONFIG(),
-        .host_config = ESP_OPENTHREAD_DEFAULT_HOST_CONFIG(),
-        .port_config = ESP_OPENTHREAD_DEFAULT_PORT_CONFIG(),
-    };
-    esp_rcp_update_config_t ot_rcp_update_config = ESP_OPENTHREAD_RCP_UPDATE_CONFIG();
-    ESP_ERROR_CHECK(esp_vfs_eventfd_register(&ot_eventfd_config));
-
-    ESP_ERROR_CHECK(nvs_flash_init());
-    ESP_ERROR_CHECK(ot_init_spiffs());
-    ESP_ERROR_CHECK(esp_netif_init());
-    ESP_ERROR_CHECK(esp_event_loop_create_default());
-
-#if !CONFIG_OPENTHREAD_BR_AUTO_START && CONFIG_EXAMPLE_CONNECT_ETHERNET
-// TODO: Add a mechanism for connecting ETH manually.
-#error Currently we do not support a manual way to connect ETH, if you want to use ETH, please enable OPENTHREAD_BR_AUTO_START.
-#endif
-
-#if CONFIG_EXTERNAL_COEX_ENABLE
-    ot_br_external_coexist_init();
-#endif // CONFIG_EXTERNAL_COEX_ENABLE
-
-    ESP_ERROR_CHECK(mdns_init());
-    ESP_ERROR_CHECK(mdns_hostname_set("esp-ot-br"));
-#if CONFIG_OPENTHREAD_CLI_OTA
-    esp_set_ota_server_cert((char *)server_cert_pem_start);
-#endif
-
-#if CONFIG_OPENTHREAD_BR_START_WEB
-    esp_br_web_start("/spiffs");
-#endif
-
-    launch_openthread_border_router(&ot_platform_config, &ot_rcp_update_config);
-}
 
 
  /**********************************OPENTHREAD**END****************************/
@@ -467,7 +369,7 @@ void app_main (void )
             },
     };
 
-    esp_rcp_update_config_t ot_rcp_update_config = ESP_OPENTHREAD_RCP_UPDATE_CONFIG();
+    esp_rcp_update_config_t rcp_update_config = ESP_OPENTHREAD_RCP_UPDATE_CONFIG();
 
     ESP_ERROR_CHECK(esp_vfs_eventfd_register(&eventfd_config));
     ESP_ERROR_CHECK(esp_zb_platform_config(&zb_config));
@@ -497,16 +399,8 @@ void app_main (void )
     esp_br_web_start("/spiffs");
 #endif
 
-    
     launch_openthread_border_router(&openthread_config, &rcp_update_config);
 
     zbHandle = NULL;
-    
     xTaskCreate(esp_zb_task, ZB_TAG, ZB_TASK_SIZE, NULL, ZB_TASK_PRIORITY, &zbHandle);
-    configASSERT( zbHandle );
-
-    loop(){
-
-    }
-    vTaskDelete(zbHandle);
 }
