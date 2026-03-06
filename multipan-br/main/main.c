@@ -42,7 +42,6 @@
 
 static const char *TAG = "MULTIPAN_BR";
 
-static TaskHandle_t zbHandle;
 
 extern const uint8_t server_cert_pem_start[] asm("_binary_ca_cert_pem_start");
 extern const uint8_t server_cert_pem_end[] asm("_binary_ca_cert_pem_end");
@@ -110,10 +109,12 @@ void app_main (void )
         .max_fds = max_eventfd,
     };
 
-    esp_openthread_platform_config_t platform_config = {
+    esp_openthread_config_t platform_config = {
+      .platform_config = {
         .radio_config = ESP_OPENTHREAD_DEFAULT_RADIO_CONFIG(),
         .host_config = ESP_OPENTHREAD_DEFAULT_HOST_CONFIG(),
         .port_config = ESP_OPENTHREAD_DEFAULT_PORT_CONFIG(),
+        },
     };
 
     ESP_ERROR_CHECK(esp_vfs_eventfd_register(&eventfd_config));
@@ -130,6 +131,6 @@ void app_main (void )
     esp_br_web_start("/spiffs");
 #endif
 
-launch_openthread_border_router(&openthread_config, TAG);
+launch_openthread_border_router(&platform_config, TAG);
 
 }
