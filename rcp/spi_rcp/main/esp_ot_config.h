@@ -59,20 +59,20 @@
         .spi_slave_config = {                                   \
             .host_device = SPI2_HOST,                           \
             .bus_config = {                                     \
-                .mosi_io_num = 3,                               \
-                .miso_io_num = 1,                               \
-                .sclk_io_num = 0,                               \
+                .mosi_io_num = 10,                               \
+                .miso_io_num = 11,                               \
+                .sclk_io_num = 12,                               \
                 .quadhd_io_num = -1,                            \
                 .quadwp_io_num = -1,                            \
                 .isr_cpu_id = ESP_INTR_CPU_AFFINITY_AUTO,       \
             },                                                  \
             .slave_config = {                                   \
                 .mode = 0,                                      \
-                .spics_io_num = 2,                              \
+                .spics_io_num = 13,                              \
                 .queue_size = 3,                                \
                 .flags = 0,                                     \
             },                                                  \
-            .intr_pin = 9,                                      \
+            .intr_pin = 14,                                      \
         },                                                      \
     }
 #endif
